@@ -1,0 +1,249 @@
+---
+title: "Tarea de probabilidad 1"
+author: "Angel Adrian De la Cruz Castillo"
+date: "10/12/2020"
+output: html_document
+---
+
+# Angel Adrian De la Cruz Castillo
+
+***
+
+## 1) Demostrar las leyes de Morgan
+
+### a) $(A \cup B)'$ = $A'\cap B'$
+
+Con $P = (A \cup B)$ y $Q = A'\cap B'$
+
+x es un elemento de P tal que $x\in P \Rightarrow x \in (A\cup B)'$
+
+-$$x \notin (A\cup B) \therefore x \notin A \land x \notin B$$
+-$$x \in A' \land x \in B' \therefore x \in A' \cup B'$$
+-$$x \in Q$$
+-$$\therefore P \subset Q$$
+
+-y es un elemento de Q tal que $y \in Q \Rightarrow y \in A' \cap B'$
+
+-$$y \in A' \land y \in B'$$
+-$$y \notin A \land y \notin B$$
+-$$y \notin (A \cup B)$$
+-$$y \in (A \cup B)'$$
+-$$y \in P$$
+-$$\therefore Q \subset P$$
+
+Teniendo que $Q \subset P$ y que $P \subset Q$, tenemos que $P=Q$, $$\therefore (A \cup B)'= (A' \cap B') $$\Box
+
+### b) $(A \cap B)' = A' \cup B'$
+
+Con $M = (A \cap B)'$ y $N = A' \cup B'$
+
+x es un elemento de M tal que $x \in M \Rightarrow x \in (A \cap B)'$
+
+-$$x \notin (A \cap B)$$
+-$$x \notin A \land x \notin B$$
+-$$x \in A' \land x \in B'$$
+-$$x \in A' \cup B'$$
+-$$x \in N$$
+-$$\therefore M \subset N$$
+
+y es un elemento de N tal que $y \in N \Rightarrow y \in A' \cup B'$
+
+-$$y \in A' \land y \in B'$$
+-$$y \notin B \land y \notin A$$
+-$$y \notin (A \cap B)$$
+-$$y \in (A \cap B)'$$
+-$$y \in M$$
+-$$\therefore N \subset M$$
+
+Teniendo que $N \subset M$ y que $M \subset N$, se sabe que $M = N$
+$$\therefore (A \cap B)' = A' \cup B$$'\Box
+
+***
+
+## 2) Demostrar la segunda ley de la contención $(A \cup B) \cap (A \cup C) \subset A \cup (B \cap C)$
+
+-$$x \in (A \cup B) \cap (A \cup C)$$
+-$$\therefore x \in A \lor B \land x \in A \lor C$$
+-Si $x \in A$ entonces $x \in A \cup (B \cap C)$
+-Si $x \in B$ entonces $x \in C$
+-$$\therefore x \in B \cap C \land x \in A \cup (B \cap C)$$
+Lo anterior prueba que $$(A \cup B) \cap (A \cup C) \subset A \cup (B \cap C)$$ \Box
+
+***
+
+## 3) Demostrar la segunda ley de la distributividad $A \cap (B \cup C) = (A \cap B)\cup (A \cap C)$
+
+Se parte de la afirmación $x \in A \cap (B \cup C)$
+
+-$$x \in A \land x \in (B \cup C)$$
+-$$x \in A \land (x \in B \lor x \in C)$$
+-$$(x \in A \land x \in B) \lor (x \in A \land x \in C)$$
+-$$x \in A \cap B \lor x \in A \cap C$$
+-$$\therefore x \in (A \cap B) \cup (A \cap C)$$
+- Finalmente $x \in A \cap (B \cup C)$ implica que $x \in (A \cap B) \cup (A \cap C)$, por lo que se puede concluir que $$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$ \Box
+
+***
+
+## 4) Utiliza los axiomas de la probabilidad y las propiedades de las medidas de probabilidad vistas en clase para demostrar los siguientes puntos:
+
+
+### a) Punto 1
+Se empieza con una secuencia de números reales que decrementan $x_{n} : n = 1,2,...$ tal que $x_{n} \to -\infty$ cuando $n \to \infty$. Entonces, para $x_{n} \geq x_{n+1}$ se tiene $A_{xn} \supseteq A_{xn+1}$ y $$\therefore \bigcap^\infty_{n=1} A_{xn}=O$$
+$$\therefore \lim_{n \to \infty} F_{X}(x_n) = \lim_{n \to \infty} P (A_{xn}) = P (\bigcap^\infty_{n=1} A_{xn}) = P (O) = 0$$
+Dado que lo anterior aplica para cualquier secuencia ${x_{n}}$ tal que ${x_{n}} \to -\infty$ se concluye que $\lim_{x \to -\infty} F_{X} (x) = 0$
+
+En el caso de cuando $x \to \infty$ , esta propiedad se prueba con un razonamiento básicamente igual al anterior, la diferencia es que en el conjunto de números reales, éstos van a incrementar en lugar de decrementar, es decir, el conjunto queda como ${x_{n} : n = 1,2,...}$ tal que $x_{n} \to \infty$ cuando $n \to \infty$ y por lo tanto, se tiene que $x_{n} \leq x_{n+1}$ a partir de ahí, los pasos para hacer la demostración son exactamente los mismos que en el punto 2. \Box
+
+### b) Punto 2
+
+Por definición, una función es continua si $\lim_{\delta \to 0} g(x+\delta) = g(x)$ Con $x_n$ siendo una secuencia que decrece tal que $x_n$ \to \x cuando \n \to \infty . Entonces, por definición, $A_x \subseteq A_{xn}$ para todo \n y $A_x$ es el conjunto más grande ára el cual es verdad. Lo cual resulta en $$\bigcap^\infty_{n=1} A_{xn} = A_x$$, $$\therefore \lim_{n\to\infty}F_X(x_n) = \lim_{n\to\infty}P(A_{xn})= P(\bigcap^\infty_{n=1}A_{xn})=P(A_{x})=F_X(x)$$ y dado que esto aplica para cualquier secuencia {$x_n$} tal que ${x_n} \to x$, se concluye que $\lim_{\delta\to\ 0}F_x(x+\delta) = F_X(x)$ para toda \x y \therefore $F_x$ es continua por la derecha \Box
+
+### c) Punto 3
+A partir de un razonamiento similar al punto anterior, se puede observar que $\lim_{\delta \to 0} F_X(x-\delta)$, el límite no se aproximará a $F_X(x)$ si no a el cero mismo, por lo que se puede observar fácilmente que existe un límite por la izquierda \Box
+
+### d) Punto 4
+
+Para todo $x_{i} < x_{j}$ se tiene que $A_{xi} \subseteq A_{xj}$. $\therefore P (A_{xi}) \leq P (A_{xj})$ y finalmente $F_{X}(x_{i}) \leq F_{X}(x_{j})$ \therefore es no-decreciente \Box
+
+***
+
+## 5) Construir una función de densidad a partir de la función dada
+
+Para empezar, se quiere que $$\int_{A}f(x) dx = 1$$ sin embargo, $$\int_{-\infty}^0 0 dx + \int_{0}^{10} 1dx + \int_{10}^{20} 1 + \frac{x-10}{10}dx + \int_{20}^\infty 0dx = \int_{A}f(x)dx =25$$ por lo que se debe normalizar, resultando en $$\frac{1}{25}\int_{-\infty}^{\infty}f(x)dx = 1$$
+
+### a) Calcula la función de distribución resultante
+Como ya se mostró anteriormente el proceso, solo se pondrá la función final la cual es: $$\frac{1}{25}\int_{-\infty}^{\infty}f(x)dx$$
+
+### b) Calcula los cuantiles 1/4, 1/3 y 3/4
+
+Para facilitar más el cálculo de los cuantiles primero hay que ver si la primera integral de la función ya contiene los primeros cuantiles, para lo cual simplemente se evalúa la integral en el intervalo en el que la condición lo permita:
+$$\frac{1}{25}\int_{0}^{10}1dx = \frac{10}{25}$$ El resultado se observa que es mayor a 1/4 y a 1/3 por lo cual ésta integral servirá para caluclar los primeros dos cuantiles, mientras que el último, será calculado usando la segunda integral
+
+$$Q = 1/4$$
+-$\frac{1}{25}\int_{0}^P1dx = .25$
+-$\frac{P}{25}= .25, \therefore \boxed{P=6.25}$
+
+$$Q=1/3$$
+-$\frac{1}{25}\int_{0}^P1dx = 1/3$
+-$\frac{P}{25}= 1/3, \therefore \boxed{P=8.33}$
+
+Para el cuantil 3/4, se tiene que sumar la fracción de los datos que ya se obtuvieron anteriormente con la evaluación de la primera integral, la cual es 2/5
+$$Q=3/4$$
+-$\frac{2}{5}+\frac{1}{25}\int_{10}^{P}1+\frac{x-10}{10}dx = .75$
+-$\frac{1}{25}(\frac{P^2}{20}-5)=.75-.4, \therefore p^2=275, \boxed{P=16.58}$
+
+***
+
+## 6)
+
+### a) Utiliza la expansión en serie de Taylor alrededor del 0 de la función exponencial para argumentar que la medida propuesta sí es efectivamente una medida de probabilidad
+
+La serie de Taylor es:
+$$\sum_{n=0}^\infty\frac{f^{n}(a)}{n!}(x-a)^{n}$$
+
+Al hacer una serie de Taylor con centro en cero de la función $e^{x}$ se puede aproximar como:
+$$\sum_{n=0}^\infty\frac{f^{n}(0)}{n!}(x)=1+x+\frac{x^2}{2}+\frac{x^3}{6}+\frac{x^4}{24}+\frac{x^5}{120}+O(x^6)=\sum_{n=0}^\infty\frac{x^k}{k!}$$
+$$\therefore e^x=\sum_{n=0}^\infty\frac{x^k}{k!}$$
+Lo cual quiere decir que al sumar todos los valores de la función de densidad de probabilidad se tiene:
+$$P(\Omega)=\sum_{k=0}^\infty e^{-\lambda}\frac{\lambda ^k}{k!}=e^{-\lambda}\sum_{k=0}^\infty\frac{\lambda ^k}{k!}$$
+\therefore Al recordar la serie de Taylor que se hizo con centro en cero, se tiene que :
+$$P(\Omega)=e^{-\lambda}e^\lambda=1$$
+Dado que la suma de los valores de la función es 1, se puede concluir que es efectivamente una medida de probabilidad
+
+### b) Crear una función de R que reciba un parámetro \lambda >0 que dibuje una gráfica donde se pueda visualizar la distribución de Poission para los distintos valores de lambda
+
+```{r}
+graficarLambda <- function(k, lambda){
+ 
+  plot(k, exp(-lambda[1])*(lambda[1]^(k)/factorial(k)), type = "b", col = "black", ann=FALSE)
+ 
+  contador <- 1
+  for (x in lambda)
+  {
+    lines(k, exp(-x)*(x^(k)/factorial(k)), col = rainbow(length(lambda))[contador], type = "b")
+    contador <- contador+1
+  }
+  legend("topright", legend = lambda, fill = rainbow(length(lambda)), title = "Lambda")
+ 
+}
+
+#ejemplo
+
+lambda <- c(.5,1,5,7,10)
+k <- seq(1,20,.5)
+
+graficarLambda(k, lambda)
+```
+
+### c) Realizar lo mismo que en el punto anterior pero esa vez con la función cumulativa
+
+```{r}
+graficarLambda <- function(k, lambda){
+ 
+  plot(k, ppois(k,lambda[1]), type = "b", col = "black", ann=FALSE)
+ 
+  contador <- 1
+  for (x in lambda)
+  {
+    lines(k, ppois(k,x), col = rainbow(length(lambda))[contador], type = "b")
+    contador <- contador+1
+  }
+  legend("topright", legend = lambda, fill = rainbow(length(lambda)), title = "Lambda")
+}  
+
+#ejemplo
+
+lambda <- c(.5,1,5,7,10)
+k <- seq(1,20,.5)
+
+graficarLambda(k, lambda)
+
+```
+
+***
+
+## 7)
+### a) Argumentar que la función gamma es una función de densidad
+Recordando a la función Gamma $$ \Gamma (\alpha) = \int_{0}^\infty x^{\alpha -1}e^{-x}dx$$
+Si se dividen ambos lados de la igualdad por $\Gamma(\alpha)$ se obtiene $$1=\int_{0}^{\infty}\frac{1}{\Gamma(\alpha)}x^{\alpha -1}e^{-x}dx$$
+Para finalizar se hace un cambio de variable donde $x=\beta y$
+$$1=\int_{0}^\infty\frac{\beta ^\alpha}{\Gamma(\alpha)}y^{\alpha -1}e^{-\beta y}dy$$
+\therefore se define
+$$f(x|\alpha, \beta)=\frac{\beta ^\alpha}{\Gamma(\alpha)}x^{\alpha -1}e^{-\beta x}$$
+Para $x\geq 0$. Como la función no puede ser negativa e integra a uno, se comprueba que es una función de densidad de probabilidad. \Box
+
+
+### b) Crear función de R con parámetros \alpha y \beta que permita visualizar distintos valores de ambas variables en la distribución Gamma en una misma figura
+```{r}
+graficarGamma <- function(alfa, beta){
+  x<-seq(0,20,.1)
+  plot(0,0, xlim = c(0,20), ylim =c(0,1), type = "l", col = "white", ann= FALSE)
+  for (i in seq(1,length(alfa))){
+  valores <- (((beta[i]^(alfa[i]))/(factorial(alfa[i]-1)))*x^(alfa[i]-1)*exp(-beta[i]*x))
+  lines(x,valores, col = rainbow(length(alfa))[i])
+  }
+  legend("topright", legend= paste("α =", alfa, " β =", beta), fill = rainbow(length(alfa)), bty="n")
+}
+
+#ejemplo
+graficarGamma(c(1,2,3,5,9,7.5,.5),c(2,2,2,1,.5,1,1))
+
+
+```
+
+
+### c) Hacer lo mismo que en el punto anterior pero con la función cumulativa
+
+```{r}
+graficarGamma <- function(alfa, beta){
+  x<-seq(0,20,.1)
+  plot(0,0, xlim = c(0,20), ylim =c(0,1), type = "l", col = "white", ann= FALSE)
+  for (i in seq(1,length(alfa))){
+  lines(x, pgamma(x, shape = alfa[i], rate = beta[i]), col = rainbow(length(alfa))[i])
+  }
+  legend("topright", legend= paste("α =", alfa, " β =", beta), fill = rainbow(length(alfa)))
+}
+
+#ejemplo
+graficarGamma(c(1,2,3,5,9,7.5,.5),c(2,2,2,1,.5,1,1))
+```
