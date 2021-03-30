@@ -1,0 +1,97 @@
+---
+title: "Tarea Familia Apply"
+author: "Angel Adrian De la Cruz Castillo"
+date: "22/10/2020"
+output: pdf_document
+---
+
+***
+
+## 1) Crea un array de 10X5X3 con números obtenidos al azar de la distribución beta con parámetros shape1 = 1 y shape2 = 2.
+
+```{r, eval = FALSE}
+
+# Se crea array con las especificaciones dadas
+
+> arry <- array(rbeta(150, shape1 = 1, shape2 = 2), dim = c(10,5,3))
+
+```
+
+### a) Utiliza la función apply para “rotar” el array de tal manera que lo que antes era la dimensión 1 ahora sea la dimensión 3, lo que era la dimensión 2 sea la dimensión 1, y lo que era la dimensión 3 ahora sea la dimensión 2; nota que el nuevo array debe ser de dimension 5X3X10.
+
+```{r, eval = FALSE}
+
+# Se intercambian posiciones con funcion apply
+
+> arry <- apply(arry, MARGIN = c(2,3,1), t)
+
+```
+
+### b) Imagina que el array original contiene datos de expresión génica medidas para 10 genes en 5 repeticiones y en 3 condiciones experimentales distintas; i.e. las dimensiones del array son de la forma (gene X repetición X condición). Utiliza la función apply para calcular el promedio - a lo largo de las repeticiones - de la expresión de cada gen en cada condición
+
+```{r, eval = FALSE}
+
+# Se regresa el array a su forma original
+
+> arry <- apply(arry, MARGIN = c(3,1,2), t)
+
+# Se nombran las dimensiones
+
+> dimnames(arry) <- list(paste("Gene",(1:10)), 
+                         paste("Repeticion", (1:5)), paste("Condicion", (1:3)))
+
+# Se obtiene el promedio de los genes en cada condicion
+
+> apply(arry, MARGIN = c(1,3), mean)
+
+```
+
+### c) Calcula el promedio global de expresión de cada gen, i.e. el promedio de expresión a lo largo de todas las condiciones y todas las repeticiones juntas.
+
+```{r, eval = FALSE}
+
+# Se obtiene promedio global de genes
+
+> promediosGlobales <- apply(arry, MARGIN = 1, mean)
+
+```
+
+***
+
+## 2) Utiliza la función sample para asignar categorías aleatorias a cada uno de los 10 genes del primer ejercicio, la categoría “supresor” con probabilidad 0.2, la categoría “oncogene” con probabilidad 0.5, y la categoría “neutro” con probabilidad 0.3.
+
+```{r, eval = FALSE}
+
+# Se crean categorias con las condiciones dadas
+
+> categorias <- sample(c("Supresor", "Oncogene", "Neutro"), 
+                       10, replace = TRUE, prob = c(.2,.5,.3))
+
+```
+
+### a) Utiliza la función tapply para calcular el máximo del promedio de expresión de los genes dentro de cada categoría.
+
+```{r, eval = FALSE}
+
+# Se obtiene el promedio maximo de cada categoria
+
+> tapply(promediosGlobales, categorias, max)
+
+
+```
+
+### b) Utiliza la función tapply para obtener, para cada categoría, el índice - dentro del vector de promedios de expresión génica de cada gen, o, equivalentemente, dentro de la primer dimensión del array con los datos originales - de aquel gen que haya tenido el menor promedio de expresión dentro de su categoría.
+
+```{r, eval = FALSE}
+
+# Se obtienen índices de de genes de cada categoria con menor promedio
+
+> indices <- which(promediosGlobales %in% tapply(promediosGlobales, categorias, min))
+
+# Se obtienen los nombres de los genes 
+
+> promediosGlobales[indices]
+
+```
+
+***
