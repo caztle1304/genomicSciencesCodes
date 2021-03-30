@@ -1,0 +1,298 @@
+---
+title: "Tarea Genética de poblaciones"
+author: "Angel Adrian De la Cruz Castillo"
+date: "17/10/2020"
+output: pdf_document
+---
+
+
+***
+
+Afin de entender mejor los pasos de la tarea, en cada paso se explicará lo que se realizó en cada punto, posteriormente, al final del documento, estará el código completo con lo que se realizó en cada paso.
+
+
+***
+
+
+## 1) Creando la simulación
+
+
+Para el punto número 1, se tiene que realizar una simulación con los requerimientos establecidos respecto al parámetro lambda y las distribuciones normal y de Poisson, la simulación queda de la siguiente forma:
+
+
+```{r, eval = FALSE}
+
+   # Crea la generacion cero de la poblacion
+   
+   >poblacionG <- rnorm(100, mean = 0, sd = 0.1)
+   
+   # El loop for se repite mil veces para simular las mil generaciones
+   
+   >for(contador in 1:1000)
+   {
+   
+   # Simula el nuevo fitness de los nuevos individuos y le suma el fitness de sus padres
+   
+   poblacionG <- rnorm(length(poblacionG), mean = 0, sd = 0.1) + poblacionG
+   
+   # Obtiene el nuevo numero de individuos a pasar a la siguiente generacion
+   
+   D <-  rpois(length(poblacionG), lambda = exp(poblacionG-
+              (mean(poblacionG))+(100/length(poblacionG))-1))
+   
+   # Repite los fitness de los nuevos individuos D veces para crear
+     #D nuevos individuos con el fitness nuevo
+   
+   poblacionG <- rep(poblacionG, times = D)
+   
+   }
+
+```
+
+***
+
+## 2) Promedio de fitness de cada generación
+
+
+Para éste punto es necesario crear un vector con un espacio por cada generación que pasa, es decir, un vector de longitud mil.
+
+
+```{r, eval = FALSE}
+    
+    # Crea vector de longitud mil
+
+    >promedioFitness <- vector(mode = 'numeric', length = 1000)
+
+```
+
+
+El vector anterior debe ir rellenándose con los dos datos de cada generación, para lo cual se coloca dentro del ciclo for y con ayuda del contador los datos ocupan el espacio correspondiente dentro del vector.
+
+
+```{r, eval = FALSE}
+   
+    # Se usa funcion mean() para obtener el promedio del fitness 
+     # de los individuos y se guarda en vector
+    
+    >promedioFitness[contador] <- mean(poblacionG)
+
+```
+
+***
+
+## 3) Creando data.frame
+
+
+Para el punto 3 se pide crear un data frame con el fitness de la generación 2 en la primera columna y el índice de sus padres de la generación 1, para lo cual es necesario crear el data.frame dentro del ciclo for junto con los datos que van a llenarlo. De igual forma, es necesario que la creación del data.frame sea dentro de un condicional para que solamente se haga una vez en la generación 2.
+En la primera columna simplemente se guardan los fitness de los individuos de la segunda generación después de realizar el cálculo del nuevo fitness pero antes de realizar las D repeticiones de dicho fitness.
+En la segunda columna se guardan los índices de los padres de los individuos de la columna 1, para lo cual se toma un vector que va del 1 a la longitud del vector donde se guardaron los valores D de la generación 1 y los valores guardados en dicho vector se repiten D veces para retomar los índices de los individuos de la generación 1.
+
+
+```{r, eval = FALSE}
+
+# El if sirve para solo crear un data.frame en la generacion 2
+
+>if(contador ==2)
+{
+  
+  # Creación y llenado de data.frame con los vectores anteriormente descritos
+  
+  dataFrame <- data.frame(generacion2 = poblacionG, indicesG1 = 
+                            rep(1:length(D), times = D))
+}
+
+```
+
+***
+
+
+## 4) Obteniendo valor de fitness menor y el índice del padre correspondiente
+
+
+Para éste punto ya salimos del ciclo for. Para obtener el valor de fitness menor usamos la funcion min() sobre la primera columna del data.frame, y para obtener el índice asociado se accede al data.frame usando el valor obtenido.
+
+
+```{r, eval = FALSE}
+    
+    # Obtiene el fitness de menor valor en el data.frame
+
+    >min(dataFrame$generacion2)
+
+    #Obtiene el indice del padre
+
+    >dataFrame[dataFrame == min(dataFrame$generacion2),]
+
+```
+
+***
+
+
+## 5) Ordenando el data frame por fitness
+
+
+Para este punto se usan las funciones order() y sort() para ordenar la columna de los índices y la de los fitness respectivamente.
+
+
+```{r, eval = FALSE}
+   
+    # Ordena columna de indices de acuerdo a los fitness
+    
+    >dataFrame$indicesG1 <- dataFrame$indicesG1[order(dataFrame$generacion2)]
+
+    # Ordena columna de fitness 
+  
+    >dataFrame$generacion2 <- sort(dataFrame$generacion2)
+    
+```
+
+## 6) Ordenando data.frame por fitness y luego por índice del padre
+
+
+En este punto se realiza lo mismo que en el anterior para posteriormente realizar el acomodo con respecto a los índices 
+
+
+```{r, eval = FALSE}
+   
+    # Ordena columna de indices de acuerdo a los fitness
+    
+    >dataFrame$indicesG1 <- dataFrame$indicesG1[order(dataFrame$generacion2)]
+
+    # Ordena columna de fitness 
+  
+    >dataFrame$generacion2 <- sort(dataFrame$generacion2)
+    
+    # Ordena columna de fitness de acuerdo a los indices 
+    
+    >dataFrame$generacion2 <- dataFrame$generacion2[order(dataFrame$indicesG1)]
+    
+    # Ordena columa de indices
+    
+    >dataFrame$indicesG1 <- sort(dataFrame$indicesG1)
+    
+```
+
+***
+
+
+## 7) Obteniendo valores de fitness mayores al 80% de la población
+
+
+Para este punto, lo más sencillo es partir del data.frame ordenado de acuerdo al fitness, por lo que se acomoda el fitness de menor a mayor. Posteriormente, se obtiene el valor entero del 80% de la longitud del vector que guarda los fitness para posteriormente tomar las posiciones que sean mayores a dicho porcentaje.
+
+
+```{r, eval = FALSE}
+    
+    # Obtiene valor entero que representa 80% de la longitud del vector de fitness
+
+    >ochentaPorciento <- as.integer(length(dataFrame$generacion2)*.8)
+
+    # Guarda valores de fitness mayores al 80% del resto de la poblacion
+
+    >fitnessMayores <- dataFrame$generacion2[ochentaPorciento:length
+                                            (dataFrame$generacion2)]
+    
+```
+
+
+***
+
+
+## Codigo Final
+
+
+Como se dijo anteriormente, los pasos se explicaron uno a uno para mayor facilidad de comprensión. A continuación se presenta el código final resultado de juntar todos los pasos anteriores.
+
+
+```{r, eval = FALSE}
+
+    # Creación de vector de poblacion inicial. Corresponde a punto 1)
+
+    >poblacionG <- rnorm(100, mean = 0, sd = 0.1)
+
+    # Creacion de vector de promedios de fitness. Punto 2)
+
+    >promedioFitness <- vector(mode = 'numeric', length = 1000)
+
+    # Ciclo que simula mil generaciones. Punto 1)
+    
+    >for (contador in 1:1000)
+    
+    {
+      
+      # Nuevos fitness de poblacion. Punto 1)
+  
+      poblacionG <- rnorm(length(poblacionG), mean = 0, sd = 0.1) + poblacionG
+  
+      # Creacion de data.frame en segunda generacion. Punto 3)
+      
+      if(contador == 2)
+      {
+        # Llenado de data.frame. Punto 3)
+        
+        dataFrame <- data.frame(generacion2 = poblacionG, 
+                      indicesG1 = rep(1:length(D), times = D))
+      }
+      
+      # Obtencion de numero D de nuevos individuos. Punto 1)
+      
+      D <- rpois(length(poblacionG), lambda = exp(poblacionG-
+                                (mean(poblacionG))+(100/length(poblacionG))-1))
+  
+      # Repliación de fitness D veces para simular D nuevos individuos. Punto 1)
+      
+      poblacionG<- rep(poblacionG, times = D)
+  
+      # Calcula y guarda promedio de fitness de cada generacion. Punto 2)
+      
+      promedioFitness[contador] <- mean(poblacionG)
+    }
+
+    >print("El fitness de menor valor en la generacion 2 es: ") 
+    
+    # Imprime el fitness mas pequeño de la generacion 2. Punto 4)
+    
+    >min(dataFrame$generacion2)
+
+    >print("Y el indice de su padre es: ")
+    
+    # Imprime indice del padre del fitness mas pequeño. Punto 4)
+    
+    >dataFrame[dataFrame == min(dataFrame$generacion2),]
+
+    # Ordena columna de indices respecto a fitness. Punto 5)
+    
+    >dataFrame$indicesG1 <- dataFrame$indicesG1[order(dataFrame$generacion2)]
+    
+    # Ordena columa de fitness. Punto 5)
+    
+    >dataFrame$generacion2 <- sort(dataFrame$generacion2)
+    
+    # Se obtiene la longitud del vector correspondiente a 80% de la longitud total. Punto 7)
+    
+    >ochentaPorciento <- as.integer(length(dataFrame$generacion2)*.8)
+    
+    # Se guardan los valores de fitness mayores 
+      # al 80% de la poblacion. Punto 7)
+    
+    >fitnessMayores <- dataFrame$generacion2[ochentaPorciento:length(dataFrame$generacion2)]
+
+    # Ordena columa de indices respecto a la de fitness. Punto 6)
+    
+    >dataFrame$indicesG1 <- dataFrame$indicesG1[order(dataFrame$generacion2)]
+
+    # Ordena columna de fitness. Punto 6)
+    
+    >dataFrame$generacion2 <- sort(dataFrame$generacion2)
+    
+    # Ordena columna de fitness respecto a indices. Punto 6)
+    
+    >dataFrame$generacion2 <- dataFrame$generacion2[order(dataFrame$indicesG1)]
+    
+    # Ordena columna de indices. Punto 6)
+    
+    >dataFrame$indicesG1 <- sort(dataFrame$indicesG1)
+    
+```
+
+***
+
