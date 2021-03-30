@@ -1,0 +1,299 @@
+---
+title: "Tarea Expresión Génica"
+author: "Angel Adrian De la Cruz Castillo"
+date: "12/11/2020"
+output: html_document
+---
+
+***
+
+## Ejercicio 1
+
+En este ejercicio lo único que se pide es simular un conjunto de genes con condiciones dadas.
+
+```{r}
+
+# Se crea conjunto de genes
+
+genes <- sample(c("Activador", "Represor", "Ambivalente"), size = 50000, replace = TRUE, prob = c(.5,.4,.1))
+
+# Se repite conjunto de genes para simular 
+
+```
+
+***
+
+## Ejercicio 2
+
+En este ejercicio se pide simular niveles de expresión de los genes en 15 réplicas que se harán en dos condiciones distintas. Se especifica que el valor M de cada gen es un valor diferente para cada pareja gen/condición, es decir, que para cada gen en una condición, el valor M será el mismo en las 15 réplicas. Dicho esto, se hace un vector para el valor de M en una condición, y otro para otra condición, así como un vector independiente para cada condición. Además de lo indicado en el ejercicio, se guardarán todos los datos en un array para tener todo con mayor orden.
+
+```{r}
+
+# Se crea vector de indices de genes en caso de necesitarlo despues
+
+indicesGenes <- rep(1:50000, times = 15)
+
+# Se crea vector de nombres de genes
+
+nombresGenes <- paste("Gen ", 1:50000)
+
+# Se crea vector de nombres de replica
+
+replicas <- paste("Replica", 1:15)
+
+# Se crea vector de nombre de condiciones
+
+condiciones <- paste("Condicion", 1:2)
+
+# Se repiten los genes 15 veces para simular 15 replicas
+
+genes <- rep(genes, times = 15)
+
+# Se crea M para cada gen en condicion 1
+
+M1 <- rep(rgamma(50000, shape = 5, scale = 2), times = 15)
+
+# Se crea M para cada gen en condicion 2
+
+M2 <- rep(rgamma(50000, shape = 5, scale = 2), times = 15)
+
+# Se simula condicion 1
+
+condicion1 <- rnorm(length(indicesGenes), mean = M1, sd = M1/2)
+
+# Se simula condicion 2
+  
+condicion2 <- rnorm(length(indicesGenes), mean = M2, sd = M2/2)
+
+# Se guarda todo en un array tridimensional
+
+expresion <- array(c(condicion1, condicion2), dim = c(50000, 15, 2), dimnames = list(nombresGenes, replicas, condiciones))
+
+```
+
+***
+
+## Ejercicio 3
+
+En este ejercico se pide que se haga una gráfica donde se grafiquen los valores de expresión a través del tiempo. Para esto, hay dos formas de hacerlo, la primera es haciendo un apply sobre los renglones y la segunda es haciendo un ciclo for. La desventaja de usar el apply es que las líneas de las gráficas con un solo color, por el contrario, usando un for se pueden obtener distintos colores en cada línea. En el código de abajo, se utilizará el ciclo for para mostrar la gráfica con distintos colores.
+```{r}
+
+plot.new()
+
+# Se obtienen 30 genes al azar
+
+dinamicaExpresion <- expresion[sample(1:50000, size = 30),, ]
+
+# Se unen ambas condiciones en una sola matriz
+
+dinamicaExpresion <- cbind(dinamicaExpresion[,,1], dinamicaExpresion[,,2])
+
+# Se renombran las columnas
+
+colnames(dinamicaExpresion) <- paste("Expresion", 1:30)
+
+# Se crea funcion de colores
+
+colores = rainbow(30)
+
+# Se recorre cada regnlon (gen) de la matriz y se grafican sus valores
+for (j in 1:30){
+
+    if (j == 1){
+      
+        plot(dinamicaExpresion[j,], col = colores[j], type = "l", ylim = c(-20,50))
+    }
+  
+    else{
+      
+        lines(dinamicaExpresion[j,], col = colores[j])
+          }
+}
+
+```
+
+La alternativa usando la función apply() es la siguiente:
+
+```{r}
+
+plot.new()
+ 
+plot(dinamicaExpresion[1,], col = cm.colors(1), ylim = c(-20,50), type = "l")
+
+apply(dinamicaExpresion, MARGIN = 1, lines, col = colors()[614], type = "l")
+
+```
+ 
+***
+
+## Ejercicio 4
+
+En el ejercicio 4 sólo se pide hacer un heatmap con los datos obtenidos anteriormente
+
+```{r}
+
+heatmap(dinamicaExpresion, scale = "column", col = cm.colors(900))
+
+```
+
+***
+
+## Ejercicio 5
+
+En este ejercicio se pide realizar un barplot de 10 genes al azar, comparando el promedio de su expresión en las dos condiciones diferentes.
+
+```{r}
+
+# Se toman 10 genes al azar
+
+dinamicaExpresion <- expresion[sample(1:50000, size = 10),,]
+
+# Se calculan los promedios de la expresion de los genes en cada condicion
+
+promediosExpresion <- apply(dinamicaExpresion, MARGIN = c(1,3), mean)
+
+# Se hace una grafica de barras
+
+barplot(t(promediosExpresion), beside = TRUE, col = c("purple", "green"), space = c(.2,1), cex.names = .5)
+
+# Se añaden notas
+
+legend("topright", c("Condicion1", "Condicion2"), fill= c("purple", "green"))
+
+```
+
+***
+
+## Ejercicio 6
+
+En el ejercicio 6 Se pide calcular el valor del estadístico t para todos los genes con una fórmula dada. Dicha fórmula requiere obtener el promedio de los promedios de expresión de los genes en las dos condiciones, así como la varianza. Para esto, se hacen 2 vectores para los promedios, uno para cada condición, y 2 para las varianzas, igual, uno para cada condición. Después, se pide que se escriban en un archivo los genes donde | t | > 3. 
+
+```{r}
+
+# Funcion para obtener estadistico t
+
+tStudent <- function(matrizPromedios, promedios, varianzas){
+  
+  t <- (promedios[,1]-promedios[,2])/sqrt((varianzas[,1]/14)+(varianzas[,2]/14))
+ 
+  return (t)
+}
+
+# Se obtiene vector de promedio de ambas condiciones
+
+promediosAmbasCondiciones <- apply(expresion, MARGIN = c(1,3), mean)
+
+# Se obtene vector de varianza de ambas condiciones
+
+varianzasAmbasCondiciones <- apply(expresion, MARGIN = c(1,3), var)
+
+# Se obtiene el estadistico t de los genes
+
+estadisticoT <- tStudent(promediosAmbasCondiciones, promediosAmbasCondiciones, varianzasAmbasCondiciones)
+
+# Se obtienen los genes con diferencia significativa y se guardan en un data.frame
+
+diferSignificativa <- data.frame(Genes = paste("Gen", which(abs(estadisticoT) > 3)), EstadisticoT = estadisticoT[which(abs(estadisticoT) > 3)])
+
+# Se escribe data.frame en un archivo .csv
+
+write.csv(diferSignificativa, "output.csv", row.names = FALSE)
+
+```
+
+***
+
+## Ejercicio 7
+
+En el ejercicio 7 se pide obtener los valores t de los genes activadores y graficarlos en un histograma
+
+```{r}
+
+# Se obtiene t de genes activadores
+
+tActivadores <- estadisticoT[which(genes == "Activador")]
+
+# Se genera funcion de colores
+
+colores <- colorRampPalette(c("cyan", "maroon1"))
+
+# Se genera histograma de valor t de activadores
+
+hist(tActivadores, col = colores(6), xlab= "Valor t de activadores", ylab = "Frecuencia", main = "Valor T de activadores")
+
+```
+
+***
+
+
+## Ejercicio 8
+
+En Este ejercicio se pide obtener los valores t de la misma forma que en el ejercicio anterior pero ahora con todos los tipos de genes y graficarlos todos sobre la misma gráfica con la función boxplot()
+
+```{r}
+
+# Se obtiene t de los genes represores y ambivalentes
+
+tRepresores <- estadisticoT[which(genes == "Represor")]
+
+tAmbivalentes <- estadisticoT[which(genes == "Ambivalente")]
+
+# Se genera boxlplot
+
+boxplot(tRepresores, tActivadores, tAmbivalentes, names = c("Represores", "Activadores", "Ambivalentes"), main = "Categorias", col = c("blue", "White", "Red"))
+
+```
+
+***
+
+## Ejercicio 9
+En este ejercicio se pide realizar algo parecido al ejercicio anterior, con la diferencia de que cada tipo de gen será graficado en una gráfica independiente pero mostrando todas las gráficas en la misma figura.
+
+```{r}
+
+# Se inicializa nuevo device
+# Con la funcion par se modifica la figure region
+# El parametro new, hace que se añadan las grficas en un solo frame
+
+plot.new()
+
+par(fig = c(.5,1,0,.5))
+
+hist(tRepresores, main = "Represores", col = rainbow(8))
+
+par(fig = c(0,.5,0,.5), new = TRUE)
+
+hist(tActivadores, main = "Activadores", col = rainbow(8))
+
+par(fig = c(0,.5,.5,1), new = TRUE)
+
+hist(tAmbivalentes, main = "Ambivalentes", col = rainbow(8))
+
+par(fig = c(.5,1,.5,1), new = TRUE)
+
+hist(estadisticoT, main = "Valores Totales", col = rainbow(8))
+
+```
+
+***
+
+## Ejercicio 10 
+
+Para el último ejercicio se pide obtener la cantidad de genes de cada categoría tal que | t | del gen sea mayor a 3, para lo cual se usarán los vectores obtenidos anteriormente.
+
+```{r}
+
+# Se obtienen los genes cuyo valor absoluto es mayor a 3 en cada categoria
+
+tMayorActivadores <- length(which(abs(tActivadores) > 3 ))
+
+tMayorRepresores <- length(which(abs(tRepresores) > 3))
+
+tMayorAmbivalentes <- length(which(abs(tAmbivalentes) > 3))
+
+# Se hace la grafica de pie
+
+pie(c(tMayorActivadores, tMayorRepresores, tMayorAmbivalentes), labels = c("Activadores", "Represores", "Ambivalentes"), col = topo.colors(3), main = "Genes con | t | > 3")
+
+
+```
