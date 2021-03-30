@@ -1,0 +1,196 @@
+---
+title: "Tarea 2 Probabilidad"
+author: "Angel Adrian De la Cruz Castillo"
+date: "28/1/2021"
+output: html_document
+---
+
+## 1) Valores esperados
+
+- Calcula la media y la varianza de la distribución Poisson
+
+La definición de la varianza es $ var(X) = E(X^2) - (E(X))^2$  
+
+La función del valor esperado de una variable aleatoria discreta es: $E(X^2)= \sum_{x \in \Omega _{X}} x^2 \Pi(X=x)$  
+Debido a que para calcular la varianza es necesario saber el valor esperado, se calculará primero el valor esperado:  
+
+-Valor esperado:
+
+-Definición de valor esperado: $\displaystyle E (X) = \sum_{x} x  \Pi (X = x)$
+
+-Definición de la distribución Poisson:
+$$E(X^2) = \sum_{k \mathop \ge 0} {k^2 \dfrac 1 {k!} \lambda^k e^{-\lambda} }$$
+-Se empieza en uno porque con cero el témrino desaparece
+$$ E(X)=\lambda e^{-\lambda} \sum_{k \mathop \ge 1} \frac 1 { (k - 1)!} \lambda^{k-1}$$
+-Con $j=k-1$
+$$ =\lambda e^{-\lambda} \sum_{j \mathop \ge 0} \frac {\lambda^j} {j!}$$
+$$= \lambda e^{-\lambda} e^{\lambda}  $$
+$$\boxed{=\lambda}$$
+
+-Varianza:
+
+-Definición de la distribución Poisson:
+$$E(X^2) = \sum_{k \mathop \ge 0} {k^2 \dfrac 1 {k!} \lambda^k e^{-\lambda} }$$
+-Cambio del límite porque el término se vuelve cero cuando k=0:
+$$ =\lambda e^{-\lambda} \sum_{k \mathop \ge 1} {k \dfrac 1 { {(k - 1)}!} \lambda^{k - 1} }$$
+$$ =\lambda e^{-\lambda} ( {\sum_{k \mathop \ge 1} { {(k - 1)} \dfrac 1 {{(k - 1)}!} \lambda^{k - 1} } + \sum_{k \mathop \ge 1} {\frac 1 { {(k - 1)}!} \lambda^{k - 1} } })$$
+-Nuevo cambio de límite porque el término es cero cuando $k-1=0$
+$$ =\lambda e^{-\lambda} ( {\lambda \sum_{k \mathop \ge 2} {\dfrac 1 { {(k - 2)}!} \lambda^{k - 2} } + \sum_{k \mathop \ge 1} {\dfrac 1 { {(k - 1)}!} \lambda^{k - 1} } })$$
+-Con $i = k - 2, j = k - 1$
+$$ =\lambda e^{-\lambda} ( {\lambda \sum_{i \mathop \ge 0} {\dfrac 1 {i!} \lambda^i} + \sum_{j \mathop \ge 0} {\dfrac 1 {j!} \lambda^j} })$$
+
+-Expansión en serie de Taylor para función exponencial
+
+$$ =\lambda e^{-\lambda} ( {\lambda e^\lambda + e^\lambda})$$
+
+$$=\lambda(\lambda +1)$$
+$$=\lambda ^2 +\lambda$$
+
+-Entonces:
+
+$$var(X)=E(X^2)-(E(X))^2$$
+$$=\lambda ^2 +\lambda -\lambda ^2$$
+
+$$\boxed{=\lambda}$$
+
+***
+
+## 2) Calcula la media y la varianza de la distribución Gamma
+
+-Media
+
+-Partiendo de la definición del valor esperado de una variable continua aleatoria se sustituye la función gamma
+
+$$E(X) = \frac{\beta^{\alpha}}{\Gamma (\alpha)}\int_0^{\infty}x^{\alpha}e^{-\beta x}dx$$
+
+
+- Se hace cambio de variable $t=\beta x$
+$$=\frac{\beta ^{\alpha}}{\Gamma (\alpha)}\int_0^\infty (\frac{t}{\beta})^{\alpha} e^{-t}\frac{dt}{\beta}$$
+
+$$=\frac {\beta^\alpha} {\beta^{\alpha + 1}  \Gamma (\alpha)} \int_0^\infty t^\alpha e^{-t} d t$$
+
+$$=\frac { \Gamma {(\alpha + 1)} } {\beta \,  \Gamma (\alpha)}$$
+
+$$=\frac {\alpha \,\Gamma (\alpha)} {\beta \,  \Gamma (\alpha)} $$
+
+$$\boxed{=\frac{\alpha}{\beta}}$$
+
+-Varianza
+
+-Se parte de la definición de varianza:
+
+$$\displaystyle var (X) = \int_0^\infty x^2 \,  {f_X}( x) d x -  {(E (X)})^2 $$
+
+-Se sustituye la función gamma
+
+$$= \frac {\beta^\alpha} { \Gamma (\alpha)} \int_0^\infty x^{\alpha + 1} e^{-\beta x} d x -  {(\frac \alpha \beta)}^2 $$
+
+-Se hace cambio de variable $t=\beta x$
+
+$$ = \frac {\beta^\alpha} { \Gamma (\alpha)} \int_0^\infty  ({\frac t \beta})^{\alpha + 1} e^{-t} \frac {d t} \beta - \frac {\alpha^2} {\beta^2}$$
+
+$$= \frac {\beta^\alpha} {\beta^{\alpha + 2} \, \Gamma (\alpha)} \int_0^\infty t^{\alpha + 1} e^{-t} d t - \frac {\alpha^2} {\beta^2} $$
+
+$$= \frac { \Gamma {(\alpha + 2)} } {\beta^2 \,  \Gamma (\alpha)} - \frac {\alpha^2} {\beta^2}$$
+
+$$= \frac { \Gamma ({\alpha + 2}) - \alpha^2 \,  \Gamma (\alpha)} {\beta^2 \,\Gamma (\alpha)}$$
+
+$$= \frac {\alpha  ({\alpha + 1})  \Gamma (\alpha) - \alpha^2 \,  \Gamma (\alpha)} {\beta^2 \,  \Gamma (\alpha)}$$
+$$= \frac {\alpha \,  \Gamma (\alpha)  ({\alpha + 1 - \alpha}) } {\beta^2   \Gamma (\alpha)}$$
+
+$$=\boxed{\frac{\alpha}{\beta ^2}}$$
+
+***
+
+## 3) Enuncia la ley fuerte de los grandes números para variables aleatorias con distribución Poisson y realiza simulaciones para comprobarla a través de estadísticas y de gráficas
+-Ley fuerte de los grandes números para distribución Poisson
+$$P(|\frac{X}{n}-\bar p(n)|>\epsilon)<Q$$
+
+```{r}
+random <- rpois(1000, .5)
+muestreo <- function(n) {
+  mean(sample(random, size = n, replace = TRUE))
+}
+
+plot(sapply(1:1000, muestreo), type = "l", xlab = "Muestras", ylab = "Promedio")
+```
+
+***
+
+## 4) Enuncia el teorema del límite central para variables aleatorias con ditribución Poisson y realiza simulaciones para comprobarlo a través de estadísticas y de gráficas
+
+-Con $Y=\sum_{i=1}^\lambda X_i$
+-Se usa la fórmla para normalizar la distribución Poisson y queda como:
+$$Z=\frac{Y-\lambda}{\sqrt\lambda}$$
+
+```{r}
+N <- 2000 
+n <- 1000 
+muestra = rep(0,n)
+EX <- 1
+VarX <- 1
+for (i in 1:n){
+    samp <- rpois(N,1)
+    media <- mean(samp) 
+    muestra[i] <- sqrt(N)*(media - EX)/sqrt(VarX)
+}
+hist(muestra,prob=TRUE, xlab= "Media de la muestra", ylab = "Densidad", main = "Histograma", col = "blue")
+```
+
+
+
+***
+
+## 5) Calcula la verosimilitud de una muestra ii.d Bernoulli de parámetro p desconocido. Calcula el estimador máximo verosímil para p.
+
+Como Bernoulli es una distribución discreta, la verosimilitud es la función de probabilidad. Para calcular la máxima verosimilitud debemos tener una función maximizable, y por lo tanto, derivable.
+La función de probabilidad Bernoulli se puede escribir como $f(X)=p^X (1-p)^{1-X}$ para hacerla derivable.
+Para estimar la máxima verosimilitud:
+-Se escribe la función de versimilitud
+$$L (\theta)=\prod_{i=1}^n p^{Xi}(1-p)^{1-Xi}$$
+
+-Se escribe la función de verosimilitud logarítmica
+
+$$LL(\theta)=\sum_{i=1}^n log p^{Xi} (1-p)^{1-Xi}$$
+$$=\sum_{i=1}^n Xi(logp)+(1-Xi)log(1-p)$$
+-Se hace cambio de variable donde $Y=\sum_{i=1}^n Xi$
+
+$$=Ylogp+(n-Y)log(1-p)$$
+La ecuación anterior es la de máxima verosimilitud, que es para la cual se va a maximizar el valor de p a partir de su derivada
+
+$$\frac{\delta LL(p)}{\delta p}=Y\frac{1}{p}+(n-Y)\frac{-1}{1-p}=0$$
+Simplificando:
+$$\hat p=\frac{Y}{n}=\frac{\sum_{i=1}^n Xi}{n}$$
+
+***
+
+## 6) Calcula la verosimilitud de una muestra i.i.d Poisson de parámetro \lambda desconocido. Calcula el estimador máximo verosímil para \lambda
+
+-Se transforma distribución Poisson en función
+
+$$f(x)=\frac{\lambda ^x e^{-\lambda}}{x!}x$$
+
+-Se escribe en función de verosimilitud 
+
+$$L(\lambda)=\prod_{i=1}^n \frac{\lambda ^{xi} e^{-\lambda}}{xi}=e^{-n\lambda}\frac{\lambda^{\sum_{1}^n xi}}{\prod_{i=1}^n xi}$$
+
+$$lnL(\lambda)=-n\lambda+\sum_1^n x_iln(\lambda)-ln(\prod_{i=1}^n)x_i$$
+
+-Se deriva para maximizar \lambda
+
+$$\frac{\delta lnL(\lambda)}{dp}=-n+\sum_1^nx_i\frac{1}{\lambda}=0$$
+-Simplificando 
+$$\hat\lambda = \frac{\sum_{i=1}^n x_i}{n}$$
+
+***
+
+## 9) Usar la versión de dos muestras del t-test para probar si el promedio de expresión en la condición 1 es igual al promedio de expresión de la condición 2
+
+```{r}
+condicion1 <- c(12.94, 12.79, 12.74, 12.64, 12.63, 12.54, 12.51, 12.51, 12.48, 12.40, 12.32, 12.2, 12.18, 12.1)
+condicion2 <- c(12.84, 12.72, 12.56, 12.54, 12.42, 12.74, 12.64, 12.56, 12.50)
+t.test(x = condicion1, y = condicion2, paired = FALSE, conf.level = .95)
+```
+
+De acuerdo con el resultado obtenido ($p>.05$), las diferencias de expresiones no son significativas, por lo tanto, los promedios de expresión en ambas condiciones sí son iguales
+
