@@ -1,0 +1,125 @@
+---
+title: "Tarea Isoformas"
+author: "Angel Adrian De la Cruz Castillo"
+date: "25/10/2020"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+***
+
+## 1) Primer punto
+En el primer punto se pide que se haga una simulación con las condiciones dadas en una distribución binomial. También se indica que, en el caso de que el valor de las isoformas sea cero, quiere decir que el número de isoformas es, en realidad, uno, por lo que además de obtener el número de isoformas, también se debe hacer la sustitución de los ceros por unos.
+
+```{r, eval = FALSE}
+
+# Se obtiene el numero de isoformas con la formula dada
+
+> isoformas <- rbinom(50000, 5, .5)
+
+# Se sustituyen ceros por unos
+
+> isoformas <- replace(isoformas, which(isoformas == 0), 1)
+
+```
+
+***
+
+## 2) Segundo punto
+En el segundo punto primero se nos pide simular una tasa de decaimiento $\tau$ para cada gen, y usando dicho valor obtenido, obtener la tasa de decaimiento con una distribución exponencial. Dado que el valor $\tau$ debe ser el mismo para cada gen, y la tasa de decaimiento variará en cada isoforma, lo conveniente es repetir tau de acuerdo a la cantidad de isoformas de un gen, de la siguiente forma
+
+```{r, eval = FALSE}
+
+# Se obtiene el valor tau y se repite segun el numero de isoformas
+
+> tau <- rep(rnorm(50000, mean = 10, sd = 1), times = isoformas) 
+
+```
+
+Posteriormente se obtiene la tasa de decaimiento con la distribución exponencial. La tasa de decaimiento será diferente para cada isoforma, aún si pertenecen al mismo gen.
+
+```{r, eval = FALSE}
+
+# Se obtiene tasa de decaimiento de cada isoforma
+
+> decaimiento <- rexp(length(tau), rate = abs(tau))
+
+```
+
+***
+
+## 3) Tercer punto
+En el tercer punto se pide asignar categorías a cada isoforma, las cuales pueden ser "Tejido A" o "Tejido B", para lo cual se usa sample() para obtener asignaciones con la probabilidad dada.
+
+```{r, eval = FALSE}
+
+# Se asignan categorías a cada isoforma
+
+> categorias <- sample(c("TejidoA", "TejidoB"), 
+                       length(decaimiento), replace = TRUE, prob = c(.6,.4))
+
+```
+
+***
+
+## 4) Cuarto punto
+En el cuarto punto se pide recuperar isoformas más estables usando tapply, para posteriormente recuperar las tasas de decaimiento de dichas isoformas y su categoría, para lo cual primero se usa la función tapply con un vector del 1 al 50 mil repetido de acuerdo al número de isoformas de un mismo gen como índice, ésto es para asignar un mismo número a N isoformas que provienen de un mismo gen, y así, justamente simular el gen del que provienen; a dicho tapply se le aplica la función which.min() para encontrar los índices de los subvectores generados donde se encuentra la isoforma con menor tasa de decaimiento
+
+```{r, eval = FALSE}
+
+# Se obtienen las isoformas mas estables de cada gen
+
+> estables <- tapply(decaimiento, rep(1:50000, times = isoformas), min)
+
+```
+
+Para recuperar las tasas de decaimiento de las isoformas más estables, se aplica otro tapply, pero en lugar de la función which.min(), se usa la función min(), para en lugar de encontrar los índices, encontrar los valores de dichos índices.
+
+```{r, eval = FALSE}
+
+# Se obtienen tasas de decaimiento de isoformas más estables 
+
+> decaimientoEstables <- tapply(decaimiento, rep(1:50000, times = isoformas), min)
+
+```
+
+Para recuperar las categorías de cada isoforma, se puede usar el vector anteriormente obtenido, para generar un nuevo vector de índices al compararlo con el vector que contiene todas las tasas de decaimiento usando el operador %in%
+
+```{r, eval = FALSE}
+
+# Se obtienen categorias de isoformas mas estables
+
+> categoriaEstables <- categorias[which(decaimientoEstables %in% decaimiento)]
+
+```
+
+Para tener la información más organizada y que sea más fácil visualizarla se puede meter dentro de un data.frame
+
+```{r, eval = FALSE}
+
+# Se hace data.frame
+
+> informacion <- data.frame("Genes" = paste("Gene", 1:50000), 
+                            "No. de Isoformas" = isoformas, 
+                            "Isoforma mas estable" = estables, 
+                            "Tasa de decaimiento + Estable" = decaimientoEstables, 
+                            "Categoria" = categoriaEstables)
+
+```
+
+***
+
+## 5) Quinto punto
+En el punto 5 se pide que recuperemos las tasas de decaimiento más estables para cada gen, y se calcule el promedio de dichas tasas. En el punto anterior ya se extrajeron las tasas de decaimiento más pequeñas para cada gen, por lo que simplemente se calcula el promedio del arreglo que guarda dichas tasas
+
+```{r, eval = FALSE}
+
+# Se obtiene promedio de las tasas mas estables
+
+promedioEstables <- mean(decaimientoEstables)
+
+```
+
+***
