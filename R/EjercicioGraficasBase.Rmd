@@ -1,0 +1,72 @@
+---
+title: "Ejercicio GraficasBase"
+author: "Angel Adrian De la Cruz Castillo"
+date: "3/11/2020"
+output: html_document
+---
+
+# Ejercicio 1
+
+Grafica las funcionesx,−x, y, xsinxen el dominio[0,8π]en una sola figura.
+
+```{r}
+
+# Se inicializa device
+
+plot.new()
+
+# Se hace vector con valores de x
+
+x <- seq(0, 8*pi, .01)
+
+# Se hace la grafica xsenx con limites dados
+
+plot(x, x*sin(x), ylab = "y", xlab = "x", ylim = c(-25,25), type = "l")
+
+# Se añade grafica de x
+
+lines(x, x)
+
+# Se añade grafica de -x
+
+lines(x, -x)
+
+
+```
+
+
+
+***
+
+# Ejercicio 2
+
+Realizar la figura dada de ejemplo
+
+
+```{r}
+
+# Se inicializa un nuevo device
+
+plot.new()
+
+# Se modifica la figure region y la plot region para posicionar la grafica en una regio especifica
+
+par(fig = c(.5,1,0,.5), plt = c(.5,1,0,1))
+
+# Se hace la grafica
+
+plot(1:10, 1:10)
+
+# Se modifica el color de los ejes de la grafica 
+
+box(which = "plot", col = "blue")
+
+# Se modifica el color del margen de la figura
+
+box(which = "figure", col = "green")
+
+# Se modifica margen exterior
+
+box(which = "outer", col = "black")
+
+```
