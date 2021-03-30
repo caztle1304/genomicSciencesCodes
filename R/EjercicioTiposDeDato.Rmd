@@ -1,0 +1,113 @@
+---
+title: "Ejercicios tipos de dato"
+author: "Angel Adrian De la Cruz Castillo"
+date: "1/10/2020"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+# Ejercicio tipos de dato
+***
+## Ejercicio 1
+- Crea el vector (1, 2, 3, . . . , 1000) y calcula su promedio.
+
+`vect <- seq(from = 1, to = 1000)`
+
+`mean(vect)`
+
+- Crea el vector de números pares hasta el 2000
+
+`pares <- seq(from = 2, to = 2000, by = 2)
+`
+
+- Nombra cada número par entre el 1 y el 2000 con el número impar que le precede
+
+`impares <- seq(from = 1, to = 2000, by = 2)`
+
+`
+names(pares) <- impares
+`
+
+***
+## Ejercicio 2
+- Crea el vector (1+1, 2+2, 3+3, 4+1, 5+2, 6+3, 7+1, 8+2, 9+3, . . . , 30+3)
+
+`vect <- seq(from = 1, to = 30)`
+
+`
+vect2 <- seq(from = 1, to = 3)`
+
+`
+suma <- vect + vect2
+`
+
+- Utiliza la función *cumsum* para crear el vector (1, 1 + 2, 1 + 2 + 22, ..., 1 + 2 + 22 + ... + 210)
+
+`acumulado <- cumsum(2^(0:10))
+`
+
+***
+## Ejercicio 3
+- Utiliza la función *rbinom* y la función *matrix* para crear una matriz de 100X10 con 0s y 1s escogidos al
+azar para cada casilla con probabilidades 0.6 y 0.4 respectivamente.
+
+`matriz <- matrix(rbinom(1000, 1, .4), nrow = 100, ncol = 10)
+`
+
+- Nombra las columnas de la matriz con las primeras 10 letras del alfabeto en mayúsculas.
+
+`colnames(matriz) <- LETTERS[1:10]
+`
+
+- Obtén la información de las especies A,B,G y H
+
+`matriz[,'A']
+`
+
+`
+matriz[,'B']
+`
+
+`matriz[, 'G']`
+
+`matriz[,'H']
+`
+
+- Imagina que las columnas corresponden a especies, los renglones a genes, y los 0s y 1s codifican la
+ausencia/presencia de cada gen en cada especie. Obtén un vector lógico que indique para cada gen si
+esta presente en al menos 5 especies.
+
+`vectorLogico <- rowSums(matriz)>=5
+`
+
+- Utiliza el vector lógico anterior para obtener toda la información de estos genes en todas las
+especies.
+
+`matriz[vectorLogico,]
+`
+
+- Utiliza el mismo vector para obtener la información de estos genes pero sólo de las especies A y B.
+
+`matriz[vectorLogico, 'A']`
+
+`matriz[vectorLogico, 'B']
+`
+
+***
+## Ejercicio 4
+- Crea un array de 10X10X10 con números al azar escogidos según la distribución Poisson de parámetro
+$\lambda$ = 10.
+
+`arreglo <- array(rpois(10^3, lambda = 10), dim = c(10, 10, 10))
+`
+
+- Calcula el promedio de todo el arreglo
+
+`mean(arreglo)
+`
+
+- Calcula el promedio de todas las casillas cuya primer coordenada es 1
+
+`mean(arreglo[1,,])
+`
