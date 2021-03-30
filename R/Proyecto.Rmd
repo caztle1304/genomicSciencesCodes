@@ -1,0 +1,299 @@
+---
+title: "PandemiaEnEstudiantes"
+author: "Angel Adrian De la Cruz Castillo, Axel Zagal Norman, Dante Torres Sepulveda, Otokkani Ortega De la Tejera"
+date: "12/28/2020"
+output:
+   html_document:
+     code_folding: show
+---
+
+```{r class.source = 'fold-hide'}
+library(ggplot2)
+library(ggsignif)
+library(RColorBrewer)
+
+analisis_general <- function(datos, folio_antes, folio_despues, etiquetas, titulo){
+  t_test <- t.test(x = datos[,folio_antes], y = datos[,folio_despues], paired = TRUE, var.equal = TRUE)
+
+  df <- data.frame(x = c(rep("Antes de la pandemia", times = 245), rep("Durante la pandemia", times = 245)), y =
+                     c(DatosEncuesta[[folio_antes[]]], DatosEncuesta[[folio_despues[]]]))
+  
+  print(ggplot(df, aes(x = factor(df[,1]), y = c(DatosEncuesta[[folio_antes[]]], DatosEncuesta[[folio_despues[]]]))) +
+          geom_boxplot(outlier.color = "#006699", outlier.shape = 8, outlier.size = 2,color=c("black"), fill=c("#006699","#990000")) + 
+          geom_signif(comparisons=list(c("Antes de la pandemia", "Durante la pandemia")),map_signif_level=TRUE) +
+          labs(y= etiquetas, x = "Respuestas Estudiantes", title = titulo) + theme_linedraw() + theme(legend.text.align = 0.5, axis.title.x.top = element_text(size = 19),   axis.text.x = element_text(size = 14),   axis.title.y = element_text(size = 12))) 
+  
+  print(c(folio_antes,folio_despues))
+  print(t_test)
+}
+
+
+
+## Funcion para graficar preguntas no pareadas con posibles respuestas Sí y No
+
+graficarSiNo <- function(columna, titulo){
+  df <- data.frame(x = c("Sí", "No"), y = c(length(which(datosEncuesta[,columna]=="Sí")), length(which(datosEncuesta[,columna]=="No"))))
+  d1 <- ggplot(data = df, aes(x = x, y = y)) + geom_bar(stat="identity", width = .5, color=c("red","blue"), fill=c("orange","green"),alpha=0.3) + theme(legend.position="S") + ggtitle(titulo) + labs(x = "Respuestas", y = "Frecuencias")
+  print(d1)
+}
+
+
+analisis_particular <- function(datos, folio_antes, folio_despues, folio_analisis1, categoria1,etiquetas,titulo){
+  indices <- which((datos[,folio_analisis1] == categoria1))
+  antes_pandemia <- datos[indices, folio_antes]
+  despues_pandemia <- datos[indices, folio_despues]
+
+  
+    df <- data.frame(x = c(rep("Antes de la pandemia", times = length(antes_pandemia)), rep("Durante la pandemia", times = length(despues_pandemia))), y =
+                     c(antes_pandemia[], despues_pandemia[]))
+  
+  
+  print(ggplot(df, aes(x = factor(df[,1]), y = c(antes_pandemia[], despues_pandemia[]))) +
+          geom_boxplot(outlier.color = "#006699", outlier.shape = 8, outlier.size = 2,color=c("black"), fill=c("#006699","#990000")) + theme(legend.position="S") + 
+          geom_signif(comparisons=list(c("Antes de la pandemia", "Durante la pandemia")),map_signif_level=TRUE) + ggtitle(titulo[]) +
+          labs(y= etiquetas, x = "Respuestas Estudiantes") + theme_linedraw())
+  
+}
+
+
+DatosEncuesta <- read.csv(file = "Impacto_de_la_pandemia_en_estudiantes1.csv" , header = TRUE, encoding = "UTF-8")
+
+```
+
+```{r}
+df <- data.frame(
+  group = c("Hombre", "Mujer", "Otro"),
+  value = c(90, 154, 2)
+  )
+
+pie(df$value, labels = paste0(df$group," ", "(", df$value, ")"), radius = 1,edges = 200000,
+    col = c("#006699", "#990000", "#999999"), main = "Sexo de los encuestados")
+```
+
+```{r}
+df <- data.frame(
+  group = c("Universidad", "Bachillerato"),
+  value = c(226,20)
+  )
+
+pie(df$value, labels = paste0(df$group," ", "(", df$value, ")"), radius = 1,
+    col = c("#006699", "#990000"), main = "Nivel académico de los encuestados")
+```
+
+```{r}
+df <- data.frame(
+  group = c("Privada", "Pública"),
+  value = c(60,186)
+  )
+
+pie(df$value, labels = paste0(df$group," ", "(", df$value, ")"), radius = 1,
+    col = c("#006699", "#990000"), main = "Institución a la que asisten los encuestados")
+```
+
+```{r}
+print("ANÁLISIS BIENESTAR EMOCIONAL")
+
+bienestar_emocional <- mapply(FUN = analisis_general, folio_antes = c("B1","B7","B13","B17"), folio_despues = c("B2","B8","B14","B18"),
+                         etiquetas = c("1 = Muy mal, 5 = Muy bien", "1 = Muy baja, 5 = Muy alta", "1 = Muy baja, 5 = Muy alta", "1 = Muy bajos, 5 = Muy altos"),
+                         titulo = c("¿Como se siente la gente al terminar un dia de labores?", "Frecuencia de sentimientos como soledad y tristeza", "Frecuencia de sentimientos como felicidad o esperanza", "Niveles generales de estres o ansiedad"),
+                         MoreArgs = list(datos = DatosEncuesta))
+
+```
+
+```{r}
+analisis_particulares <- function(datos, folio_despues, categoria1, folio_analisis){
+  indices <- which((DatosEncuesta[,folio_despues] <= 2))
+  no_aprenden_tristes <- length(which(DatosEncuesta[indices, folio_analisis] == categoria1))
+  return(no_aprenden_tristes)
+}
+
+
+xx <- mapply(analisis_particulares, categoria1 = c(1,2,3,4,5), MoreArgs = list(datos = DatosEncuesta, folio_despues = 'C2', folio_analisis = 'B8'))
+df <- data.frame(x = c("Nunca", "Casi Nunca", "A veces", "Frecuente", "Muy Frecuente"), y = xx)
+level_order<- factor(df$x, levels =  c("Nunca", "Casi Nunca", "A veces", "Frecuente", "Muy Frecuente"))
+print(ggplot(data = df, aes(x = level_order , y = y)) + geom_bar(stat="identity", width = .5, color=c("black"), fill= brewer.pal(n = 5, name = "Blues")) + labs(y= "Numero de personas que dijeron no estar aprendiendo", x='Que tan frecuente es la tisteza', title = "Relacion entre no estar apendiendo y tristeza durante la pandemia:") +theme_linedraw() + theme(legend.text.align = 0.5, axis.title.x.top = element_text(size = 15),   axis.text.x = element_text(size = 14),   axis.title.y = element_text(size = 12))) 
+
+```
+
+
+
+```{r}
+analisis_particular2 <- function(datos, folio_despues, categoria1, folio_analisis){
+  indices <- which((DatosEncuesta[,folio_despues] == 'No'))
+  no_aprenden_tristes <- length(which(DatosEncuesta[indices, folio_analisis] == categoria1))
+  return(no_aprenden_tristes)
+}
+
+xx <- mapply(analisis_particular2, categoria1 = c("Nunca", "Casi nunca", "A veces.", "Casi siempre.", "Siempre"), MoreArgs = list(datos = DatosEncuesta, folio_despues = 'C10', folio_analisis = 'C7'))
+df <- data.frame(x = c("Nunca", "Casi nunca", "A veces.", "Casi siempre.", "Siempre"), y = xx)
+level_order<- factor(df$x, levels =  c("Nunca", "Casi nunca", "A veces.", "Casi siempre.", "Siempre"))
+print(ggplot(data = df, aes(x = level_order , y = y)) + geom_bar(stat="identity", width = .5, color=c("black"), fill= brewer.pal(n = 5, name = "Blues")) + labs(y= "Numero de personas que no se reinscribirán", x='¿Les incomoda que los obliguen a participar?', title = "Relacion entre no inscribirse a otro semestre e incomodidad al participar:") + theme_linedraw() + theme(legend.text.align = 0.5, axis.title.x.top = element_text(size = 15),   axis.text.x = element_text(size = 14),   axis.title.y = element_text(size = 13))) 
+```
+
+
+
+```{r}
+print("ANÁLISIS BIENESTAR FÍSICO")
+
+bienestar_fisico <- mapply(FUN = analisis_general, folio_antes = c("B3","B9","B11"), folio_despues = c("B4","B10","B12"),
+                         etiquetas = c("Promedio de horas de ehercicio","1=1 hora, 10=10 horas","1=1 hora, 10=10  o más horas"), 
+                         titulo = c("Horas de ejercicio a la semana","Horas dormidas por día","Horas en la computadora"),
+                         MoreArgs = list(datos = DatosEncuesta))
+
+```
+```{r}
+estres_hombre <- analisis_particular(datos = DatosEncuesta, folio_antes = "B17", folio_despues ="B18", folio_analisis1 = "A1", categoria1 ="Hombre",etiquetas="1=Poco estres, 5=Mucho estres",titulo="Estres hombres")
+
+estres_mujeres <- analisis_particular(datos = DatosEncuesta, folio_antes = "B17", folio_despues ="B18", folio_analisis1 = "A1", categoria1 ="Mujer",etiquetas="1=Poco estres, 5=Mucho estres",titulo="Estres mujeres")
+
+conocimiento_privada<- analisis_particular(datos = DatosEncuesta, folio_antes = "C3", folio_despues ="C2", folio_analisis1 = "A3", categoria1 ="Privada",etiquetas="1=Ineficientemente, 5=Eficientemente",titulo="Adquisición de conocimientos->Privada")
+
+conocimiento_publica <- analisis_particular(datos = DatosEncuesta, folio_antes = "C3", folio_despues ="C2", folio_analisis1 = "A3", categoria1 ="Pública",etiquetas="1=Ineficientemente, 5=Eficientemente",titulo="Adquisición de conocimientos->Pública")
+
+conflictos_1 <- analisis_particular(datos = DatosEncuesta, folio_antes = "E1", folio_despues = "E2", folio_analisis1 =  "D3", categoria1 ="Sí",etiquetas="1=Poco frecuente, 5=Muy frecuente",titulo="Conflictos en familias afectadas económicamente")
+
+conflictos_2 <- analisis_particular(datos = DatosEncuesta, folio_antes = "E1", folio_despues = "E2", folio_analisis1 =  "B10", categoria1 =c("1","2","3","4","5","6"),etiquetas="1=Poco frecuente, 5=Muy frecuente",titulo="Conflictos en estudiantes que duermen menos")
+```
+
+
+```{r class.source = 'fold-hide'}
+
+## Funcion para graficar preguntas no pareadas con posibles respuestas Sí y No
+  
+graficarSiNo <- function(columna, titulo, y){
+  df <- data.frame(x = c("Sí", "No"), y = c(length(which(datosEncuesta[,columna]=="Sí")), length(which(datosEncuesta[,columna]=="No"))))
+  d1 <- ggplot(data = df, aes(x = x, y = y)) + geom_bar(stat="identity", width = .5, fill=c("#006699","#990000")) + theme(legend.position="S") + ggtitle(titulo) + labs(x = "Respuestas", y = "Frecuencias") + coord_cartesian(ylim = c(0, y)) + theme_linedraw()
+  print(d1) 
+  }
+
+
+#Leyendo datos de la encuesta
+
+datosEncuesta <- read.csv(file = "C:/Users/caztl/OneDrive/Escritorio/Impacto_de_la_pandemia_en_estudiantes1.xls" , header = TRUE, encoding = "UTF-8")
+
+#Importa librerías necesarias
+
+library("ggsignif")
+library("ggplot2")
+
+# D1 y D2
+
+d1 <- graficarSiNo("D1", "A)¿Dejaste de poder pagar a tus empleados domésticos?", 60)
+
+d2 <- graficarSiNo("D2", "B)¿Los que eran tus empleados domésticos quedaron desempleados?", 60)
+
+# D3
+
+d3 <- graficarSiNo("D3", "C)¿El semestre en línea ha implicado gastos extra para tu familia?", 150)
+
+# D4 y D6
+
+d4 <- graficarSiNo("D4", "D)¿Tienes que compartir computadora con alguien?", 180)
+
+d6 <- graficarSiNo("D6", "F)¿Has perdido clases por problemas técnicos?", 180)
+
+#D5
+
+df <- data.frame(x = factor(c("Nunca", "Rara vez", "A veces", "Frecuentemente", "Siempre"), levels = c("Nunca", "Rara vez", "A veces", "Frecuentemente", "Siempre")), y = c(length(which(datosEncuesta$D5=="Nunca.")), length(which(datosEncuesta$D5=="Rara vez.")), length(which(datosEncuesta$D5=="A veces.")), length(which(datosEncuesta$D5=="Frecuentemente.")), length(which(datosEncuesta$D5=="Siempre."))))
+
+d5 <- ggplot(data = df, aes(x = x, y = y)) + geom_bar(stat="identity", width = .5, fill = colorRampPalette(c("#006699","#990000"))(5)) + ggtitle("E)¿Tienes problemas con el internet para asistir a clases?") + labs(x = "Respuestas", y = "Frecuencias") + guides(fill=FALSE) + theme_linedraw()
+
+
+#D8
+
+#En la encuesta está mal para arreglarlo correr la siguiente línea para que funcione la función
+
+datosEncuesta[which(datosEncuesta$D8=="Si"), "D8"]="Sí"
+
+d8 <- graficarSiNo("D8", "G)¿El ingreso mensual de tu familia disminuyó debido a la pandemia?", 150)
+
+# Filtrado de valores para visualizar D7 y D9
+
+df <- datosEncuesta[which(datosEncuesta$D7 != "Prefiero no contestar" & datosEncuesta$D9 != "Prefiero no contestar"), ]
+
+df2 <- data.frame(valores = c("$0-$6000", "$6001-$12000", "$12001-$18000", "$18001-$24000", "Más de $24000"), frecuenciasAntes = c(length(which(df$D7=="$0 - $6000")), length(which(df$D7=="$6001 - $12000")), length(which(df$D7=="$12001 - $18000")), length(which(df$D7=="$18001 - $24000")), length(which(df$D7=="Más de $24000"))), frecuenciasDespues = c(length(which(df$D9=="$0-$6000")), length(which(df$D9=="$6001-$12000")), length(which(df$D9=="$12001-$18000")), length(which(df$D9=="$18001-$24000")), length(which(df$D9=="Más de $24000"))))
+
+# Visualización de datos en conjunto de D7 y D9
+
+df3 <- data.frame(z = rep(c("Antes de la pandemia", "Actualmente"), each = 5),x = factor(rep(c("$0-$6k", "$6k-$12k", "$12k-$18k", "$18k-$24k", ">24k"), times = 2), levels = c("$0-$6k", "$6k-$12k", "$12k-$18k", "$18k-$24k", ">24k")), y = c(length(which(df$D7=="$0 - $6000")), length(which(df$D7=="$6001 - $12000")), length(which(df$D7=="$12001 - $18000")), length(which(df$D7=="$18001 - $24000")), length(which(df$D7=="Más de $24000")), length(which(df$D9=="$0-$6000")), length(which(df$D9=="$6001-$12000")), length(which(df$D9=="$12001-$18000")), length(which(df$D9=="$18001-$24000")), length(which(df$D9=="Más de $24000"))))
+
+d79 <- ggplot(data = df3, aes(x = x, y = y, fill = z)) + geom_bar(stat="identity", width = .5, position = position_dodge()) + ggtitle("H) Comparacion de ingresos antes y despues de la pandemia") + labs(x = "Respuestas", y = "Frecuencias")+ scale_fill_manual(name = "", values=c("#006699","#990000")) + theme_linedraw()
+
+grid.arrange(d1,d2,d3,d4,d5,d6,d8, d79, nrow = 4, ncol = 2)
+
+# para hacer prueba t test de ingreso mensual 
+
+numerizado <- data.frame(x = df3[1:5,2], antes = df3[1:5, 3]*c(1,2,3,4,5), durante = df3[6:10, 3]*c(1,2,3,4,5))
+
+t.test(numerizado[,2:3])
+
+
+# C1
+df <- data.frame(x = factor(c("Mucho peor.", "Peor", "Igual", "Mejor", "Mucho mejor"), levels = c("Mucho peor.", "Peor", "Igual", "Mejor", "Mucho mejor")), y = c(length(which(datosEncuesta$C1=="Mucho peor.")), length(which(datosEncuesta$C1=="Peor.")), length(which(datosEncuesta$C1=="Igual.")), length(which(datosEncuesta$C1=="Mejor.")), length(which(datosEncuesta$C1=="Mucho mejor."))))
+
+c1 <- ggplot(data = df, aes(x = x, y = y)) + geom_bar(stat="identity", width = .5, fill = colorRampPalette(c("#006699","#990000"))(5)) + ggtitle("A)Comparación en desempeño de profesores en modalidad virtual vs presencial") + labs(x = "Respuestas", y = "Frecuencias") + theme_linedraw()
+
+# C2 y C3 con C11 y C12
+
+
+c23 <- analisis_general(datos = datosEncuesta, folio_antes = "C3", folio_despues = "C2", etiquetas = "1= Adquisición muy ineficiente, 5= Adquisición muy eficiente", titulo = "B)Comparación de adquisición de conocimientos")
+
+c1112 <- analisis_general(datos = datosEncuesta, folio_antes = "C11", folio_despues = "C12", etiquetas = "1= Muy incómodo, 5= Muy cómodo", titulo = "J)Comparación de comodidad en lugar designado para estudiar") 
+# C4 
+
+df <- data.frame(x = factor(c("Muy poco", "Poco", "Lo mismo", "Más", "Mucho más"), levels = c("Muy poco", "Poco", "Lo mismo", "Más", "Mucho más")), y = c(length(which(datosEncuesta$C4=="Muy poco.")), length(which(datosEncuesta$C4=="Poco.")), length(which(datosEncuesta$C4=="Lo mismo.")), length(which(datosEncuesta$C4=="Más")), length(which(datosEncuesta$C4=="Mucho más."))))
+c4 <- ggplot(data = df, aes(x = x, y = y)) + geom_bar(stat="identity", width = .5, fill = colorRampPalette(c("#006699","#990000"))(5)) + ggtitle("C)Disfrute de clases virtuales a comparación de presenciales") + labs(x = "Respuestas", y = "Frecuencias") + theme_linedraw()
+
+# C5
+
+c5 <- graficarSiNo("C5", "D)¿Tus maestros se adaptaron a un formato virtual?", 150)
+
+# C6
+
+c6 <- graficarSiNo("C6", "E)¿Has pensado en darte de baja?", 150)
+
+# C7
+df <- data.frame(x = factor(c("Nunca", "Casi nunca", "A veces", "Casi siempre", "Siempre"), levels = c("Nunca", "Casi nunca", "A veces", "Casi siempre", "Siempre")) , y = c(length(which(datosEncuesta$C7=="Nunca")), length(which(datosEncuesta$C7=="Casi nunca")), length(which(datosEncuesta$C7=="A veces.")), length(which(datosEncuesta$C7=="Casi siempre.")), length(which(datosEncuesta$C7=="Siempre"))))
+
+c7 <- ggplot(data = df, aes(x = x, y = y)) + geom_bar(stat="identity", width = .5, fill = colorRampPalette(c("#006699","#990000"))(5)) + ggtitle("F)¿Te incomoda que te obliguen a prender tu cámara?") + labs(x = "Respuestas", y = "Frecuencias") + theme_linedraw()
+
+# C8
+
+c8 <- graficarSiNo("C8", "G)¿Crees que tus maestros se esfuerzan por adaptar su clase?", 250)
+
+# C9
+
+c9 <- graficarSiNo("C9", "H)¿Perdiste alguna oportunidad académica?", 150)
+
+# C10
+
+c10 <- graficarSiNo("C10", "I)¿Te reinscribirías a otro semestre en línea?", 200)
+
+
+
+```
+
+
+```{r}
+print("ANÁLISIS RELACIONES INTERPERSONALES")
+
+relaciones_interpersonales <- mapply(FUN = analisis_general, folio_antes = c("E1","E3","E5","E7"), folio_despues = c("E2","E4","E6","E8"),
+                         etiquetas = c("1=Poco frecuente, 5=Muy frecuente","1=Poco frecuente, 5=Muy frecuente","1=No muy seguido, 5=Muy seguido","1=Poco cercano, 5=Muy cercano"), 
+                         titulo = c("Conflictos con familiares","Salidas con amigos","Ganas de salir a reuniones o fiestas","Cercania respecto a la familia"),
+                         MoreArgs = list(datos = DatosEncuesta))
+
+```
+```{r}
+conflictos_1 <- analisis_particular(datos = DatosEncuesta, folio_antes = "E1", folio_despues = "E2", folio_analisis1 =  "D3", categoria1 ="Sí",etiquetas="1=Poco frecuente, 5=Muy frecuente",titulo="Conflictos en familias afectadas económicamente")
+
+conflictos_2 <- analisis_particular(datos = DatosEncuesta, folio_antes = "E1", folio_despues = "E2", folio_analisis1 =  "B10", categoria1 =c("1","2","3","4","5","6"),etiquetas="1=Poco frecuente, 5=Muy frecuente",titulo="Conflictos en estudiantes que duermen menos")
+```
+
+
+```{r}
+desempeño_estudiantes <- mapply(FUN = analisis_general, folio_antes = c("C3","C11"), folio_despues = c("C2","C12"),
+                            etiquetas = c("¿Qué tan bien consideras que estas adquiriendo conocimientos?","¿Qué tan cómodo te sentías en el espacio en el que hacias tarea/estudiabas?"), 
+                            titulo = c("Siendo 1 muy ineficiente y 1 muy eficiente","Siendo 1 MUY MAL y 5 MUY BIEN"),
+                            MoreArgs = list(datos = DatosEncuesta))
+```
+
