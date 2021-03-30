@@ -1,0 +1,88 @@
+---
+title: "Ejercicio Funciones"
+author: "Angel Adrian De la Cruz Castillo"
+date: "4/10/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Ejercicio Funciones
+
+***
+
+## Ejercicio 1
+
+- Genera dos muestras aleatorias de la distribución geométrica con parámetros p = 0.9 y p = 0.01 respectivamente, cada una de tamaño 1000.
+
+```{r, eval = FALSE}
+>muestraProb9 <- rgeom(1000, .9)
+>muestraProb01<- rgeom(1000, .01)
+```
+
+- Encuentra la intersección de ambos conjuntos.
+
+```{r, eval = FALSE}
+>intersect(muestraProb01, muestraProb9)
+```
+
+- Encuentra el conjunto de números que componen cada muestra, i.e. los números presentes en cada
+muestra sin repeticiones.
+
+```{r , eval = FALSE}
+>union(muestraProb01, muestraProb9)
+```
+
+***
+
+## Ejercicio 2
+
+- Construye el siguiente vector de caracteres:"Gene_1" "Gene_2" "Gene_3" "Gene_4" "Gene_5" "Gene_6" "Gene_7 "Gene_8" "Gene_9" "Gene_10"
+
+```{r, eval = FALSE}
+>vectorDeCaracteres = paste("Gene", (1:10), sep = "_")
+```
+
+- Construye la palabra "Gene_1++Gene_2++Gene_3++Gene_4++Gene_5++Gene_6++Gene_7++Gene_8
+++Gene_9++Gene_10"
+
+```{r, eval = FALSE}
+>paste("Gene", (1:10), sep = "_", collapse = "++")
+```
+
+- Construye los siguientes vectores:
+- 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 4 4 4 4 4 5 5 5 5 5
+
+```{r, eval = FALSE}
+>vector1 <- rep(1:5, each = 5)
+```
+- 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+
+```{r, eval = FALSE}
+>vector2 <- rep(1:5, times = 5)
+```
+
+- 1 2 2 3 3 3 4 4 4 4 5 5 5 5 5
+
+```{r, eval = FALSE}
+>vector3 <- rep(1:5, 1:5)
+```
+
+- Construye una secuencia numérica de 100 elementos equidistantes dentro del intervalo [0,1] y que
+empiece en el 0 y termine en el 1.
+
+```{r, eval = FALSE}
+>vector4 <- seq(from = 0, to = 1, length.out = 100)
+```
+
+***
+
+## Ejercicio 3
+
+-Crea 1000 parejas de números (t, y) donde cada t tiene distribución uniforme en el intervalo [0,1], y cada y tiene distribución exponencial de parámetro rate = 10. Si los valores de t representan los tiempos en los que ocurren ciertas pulsaciones y los valores de y su intensidad, ordena las intensidades de las pulsaciones de acuerdo al tiempo en el que ocurrieron.
+
+```{r, eval = FALSE}
+>tiempoPulsaciones <- runif(1000, min = 0, max = 1)
+>intensidadPulsaciones <- rexp(1000, rate = 10)
+>intensidadPulsaciones <- intensidadPulsaciones[order(tiempoPulsaciones)]
+```
